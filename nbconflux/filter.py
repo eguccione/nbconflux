@@ -1,6 +1,7 @@
 import re
 
 from bleach import Cleaner
+from bleach.css_sanitizer import CSSSanitizer
 from html5lib.filters.base import Filter
 
 # Tags, attributes, and styles allowed in Confluence storage format according to
@@ -42,6 +43,9 @@ class RemovalFilter(Filter):
             elif not stack:
                 yield token
 
+from bleach.css_sanitizer import CSSSanitizer
+
+css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
 
 def sanitize_html(source):
     """Uses bleach to sanitize HTML of any tags and attributes that are
@@ -53,7 +57,7 @@ def sanitize_html(source):
     html = Cleaner(
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRS,
-        styles=ALLOWED_STYLES,
+        css_sanitizer=css_sanitizer,
         filters=[RemovalFilter],
         strip=True,
         strip_comments=True
